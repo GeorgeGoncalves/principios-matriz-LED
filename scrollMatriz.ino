@@ -19,11 +19,11 @@ void sendMAX(byte reg, byte data) {
 // Mostrando a letra "A" na matriz
 // ================================
 const byte letraA[8] = {
-  0x3c,
+  0x3C,
   0x42,
   0x42,
   0x42,
-  0x7e,
+  0x7E,
   0x42,
   0x42,
   0b00
@@ -42,14 +42,14 @@ void drawA() {
 // Mostrar "smile" na matriz
 // ================================
 const byte smile[8] = {
-  0x3c,
+  0x3C,
   0x42,
-  0xa5,
+  0xA5,
   0x81,
-  0xa5,
+  0xA5,
   0x99,
   0x42,
-  0x3c
+  0x3C
 };
 
 byte colunaSmile = 0;
@@ -64,22 +64,22 @@ void drawSmile() {
 // ================================
 // Mostrar "smile1" na matriz
 // ================================
-const byte smile1[8] = {
-  0b11111111,
-  0b11111111,
-  0b11011011,
-  0b11111111,
-  0b10111101,
-  0b11011011,
-  0b11100111,
-  0b11111111
+const byte coracao[8] = {
+  0xFF,
+  0x93,
+  0x6D,
+  0x7D,
+  0xBB,
+  0xD7,
+  0xEF,
+  0xFF
 };
 
-byte colunaSmile1 = 0;
+byte colunaCoracao = 0;
 
-void drawSmile1() {
+void drawCoracao() {
   for (byte i = 0; i < 8; i++) {
-    sendMAX(i + 1, smile1[i]);
+    sendMAX(i + 1, coracao[i]);
   }
 }
 
@@ -121,10 +121,17 @@ void loop() {
   drawSmile();
   delay(1000);
 
-  // Mostrando o "smile1" com brilho minimo até o maximo
-  drawSmile1();
+  // Mostrando o "coração" com delay de 1000 milessegundos
+  drawCoracao();
+  delay(10000);
+
+  // Acende todos os LEDs e faz parecido com uma respiração
+  for (int i = 1; i < 8 ; i++) {
+    sendMAX(i, 0xFF);
+  }  
+
   for (int i = 0; i < 15; i++) {
     sendMAX(0X0A, i);
     delay(100);
-  }  
+  }
 }
