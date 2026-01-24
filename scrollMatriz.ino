@@ -14,6 +14,7 @@ void sendMAX(byte reg, byte data) {
   digitalWrite(CS_MAX, HIGH);
 }
 
+
 // ================================
 // Mostrando a letra "A" na matriz
 // ================================
@@ -30,27 +31,25 @@ const byte letraA[8] = {
 
 byte colunaA = 0; 
 
-// ================================
-// Desenhar a letra "A" linha por linha
-// ================================
 void drawA() {
   for (byte i = 0; i < 8; i++) {
     sendMAX(i + 1, letraA[i]);
   }
 }
 
+
 // ================================
 // Mostrar "smile" na matriz
 // ================================
 const byte smile[8] = {
-  0b00111100,
-  0b01000010,
-  0b10100101,
-  0b10000001,
-  0b10100101,
-  0b10011001,
-  0b01000010,
-  0b00111100
+  0x3c,
+  0x42,
+  0xa5,
+  0x81,
+  0xa5,
+  0x99,
+  0x42,
+  0x3c
 };
 
 byte colunaSmile = 0;
@@ -58,6 +57,29 @@ byte colunaSmile = 0;
 void drawSmile() {
   for (byte i = 0; i < 8; i++) {
     sendMAX(i + 1, smile[i]);
+  }
+}
+
+
+// ================================
+// Mostrar "smile1" na matriz
+// ================================
+const byte smile1[8] = {
+  0b11111111,
+  0b11111111,
+  0b11011011,
+  0b11111111,
+  0b10111101,
+  0b11011011,
+  0b11100111,
+  0b11111111
+};
+
+byte colunaSmile1 = 0;
+
+void drawSmile1() {
+  for (byte i = 0; i < 8; i++) {
+    sendMAX(i + 1, smile1[i]);
   }
 }
 
@@ -91,5 +113,18 @@ void setup() {
 // LOOP
 // ================================
 void loop() {
+  // Mostrando a letra "A" com um delay de 1000 milessegundos
+  drawA();
+  delay(1000);
+
+  //Mostrando o "smile" com delay de 1000 milessegundos
   drawSmile();
+  delay(1000);
+
+  // Mostrando o "smile1" com brilho minimo até o maximo
+  drawSmile1();
+  for (int i = 0; i < 15; i++) {
+    sendMAX(0X0A, i);
+    delay(100);
+  }  
 }
