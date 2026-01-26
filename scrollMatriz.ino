@@ -16,7 +16,21 @@ void sendMAX(byte reg, byte data) {
 
 
 // ================================
-// Mostrando a letra "A" na matriz
+// Mostrar " "(espaço) na matriz
+// ================================
+const byte espaco[8] = {
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00
+}
+
+// ================================
+// Mostrar a letra "A" na matriz
 // ================================
 const byte letraA[8] = {
   0x3C,
@@ -28,42 +42,6 @@ const byte letraA[8] = {
   0x42,
   0b00
 };
-
-byte bufferA[8] = {0};
-
-void drawA() {
-  for (byte i = 0; i < 8; i++) {
-    sendMAX(i + 1, letraA[i]);
-  }
-}
-
-void drawBufferA() {
-  for (byte i = 0; i < 8; i++) {
-    sendMAX(i + 1, bufferA[i]);
-  }
-}
-
-void scrollLeft() {
-  for (byte i = 0; i < 8; i++) {
-    bufferA[i] <<= 1;
-  }
-}
-
-void scrollInLetter(const byte letter[8]) {
-  for (int col = 7; col >= 0; col--) {   // entra coluna por coluna
-    for (byte row = 0; row < 8; row++) {
-      bufferA[row] <<= 1;                // desloca tudo para esquerda
-
-      // pega o bit correto da letra
-      if (letter[row] & (1 << col)) {
-        bufferA[row] |= 1;               // acende bit da direita
-      }
-    }
-
-    drawBufferA();
-    delay(200);
-  }
-}
 
 
 // ================================
@@ -80,14 +58,6 @@ const byte smile[8] = {
   0x3C
 };
 
-byte colunaSmile = 0;
-
-void drawSmile() {
-  for (byte i = 0; i < 8; i++) {
-    sendMAX(i + 1, smile[i]);
-  }
-}
-
 
 // ================================
 // Mostrar "coração" na matriz
@@ -103,11 +73,45 @@ const byte coracao[8] = {
   0xFF
 };
 
-byte colunaCoracao = 0;
 
-void drawCoracao() {
+// ================================
+// Buffer
+// ================================
+byte fb[8];
+
+// ================================
+// Envia o buffer para o MAX
+// ================================
+void drawFB() {
   for (byte i = 0; i < 8; i++) {
-    sendMAX(i + 1, coracao[i]);
+    sendMAX(i + 1, fb[i]);
+  }
+}
+
+// ================================
+// Carrega uma letra
+// ================================
+void loadLetter(const byte letter[8]) {
+  for (byte i = 0; i < 8; i++) {
+    fb[i] = letter[i];
+  }
+}
+
+// ================================
+// Scroll para a esquerda
+// ================================
+void scrollLeft() {
+  for (byte i = 0; i < 8; i++) {
+    fb[i] <<= 1;
+  }
+}
+
+// ================================
+// Limpa o buffer
+// ================================
+void clearFB() {
+  for (byte i = 0; i < 8; i++) {
+    fb[i] = 0;
   }
 }
 
@@ -141,15 +145,17 @@ void setup() {
 // LOOP
 // ================================
 void loop() {
-  drawSmile();
+  // Mostra o smile na matriz
+  loadLetter(smile);
+  drawFB();
+  scrollLeft();
   delay(1000);
 
-  drawA();
-  delay(3000);
+  
 
-  drawCoracao();
-  delay(5000);
-
-  scrollInLetter(letraA);
-  delay(1000);
+  // Mostra o coração na matriz
+  loadLetter(coracao);
+  drawFB();
+  scrollLeft();
+  delay(2500);
 }
