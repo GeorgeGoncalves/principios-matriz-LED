@@ -14,6 +14,26 @@ void sendMAX(byte reg, byte data) {
   digitalWrite(CS_MAX, HIGH);
 }
 
+// ================================
+// Variavel que controla a direção da animação
+// ================================
+int direcao = 1;
+
+
+// ================================
+// Mostrar "quadrado 2x2" na matriz
+// ================================
+byte quadrado[8] = {
+  0x00,
+  0x00,
+  0x18,
+  0x18,
+  0x00,
+  0x00,
+  0x00,
+  0x00
+};
+
 
 // ================================
 // Mostrar " "(espaço) na matriz
@@ -34,14 +54,14 @@ const byte espaco[8] = {
 // Mostrar o número "1" na matriz
 // ================================
 const byte numero1[8] = {
-  0b0001000,
-  0b0011000,
-  0b0001000,
-  0b0001000,
-  0b0001000,
-  0b0001000,
-  0b0011100,
-  0b0000000
+  0x08,
+  0x18,
+  0x08,
+  0x08,
+  0x08,
+  0x08,
+  0x1C,
+  0x00
 };
 
 
@@ -49,14 +69,14 @@ const byte numero1[8] = {
 // Mostrar o número "2" na matriz
 // ================================
 const byte numero2[8] = {
-  B00111000,
-  B01000100,
-  B00000100,
-  B00001000,
-  B00010000,
-  B00100000,
-  B01111100,
-  B00000000
+  0x38,
+  0x44,
+  0x04,
+  0x08,
+  0x10,
+  0x20,
+  0x7C,
+  0x00
 };
 
 
@@ -64,14 +84,14 @@ const byte numero2[8] = {
 // Mostrar o número "3" na matriz
 // ================================
 const byte numero3[8] = {
-  0b01111100,
-  0b00001000,
-  0b00010000,
-  0b00001000,
-  0b00000100,
-  0b01000100,
-  0b00111000,
-  0b00000000
+  0x7C,
+  0x08,
+  0x10,
+  0x08,
+  0x04,
+  0x44,
+  0x38,
+  0x00
 };
 
 
@@ -115,7 +135,7 @@ const byte letraC[8] = {
   0x80,
   0x80,
   0x80,
-  0x7E, //01111110
+  0x7E,  //01111110
   0x00
 };
 
@@ -140,36 +160,26 @@ const byte smile[8] = {
 // ================================
 const byte coracao[8] = {
   0xFF,
-  0x93,
-  0x6D,
-  0x7D,
-  0xBB,
-  0xD7,
-  0xEF,
+  0x99,
+  0x00,
+  0x00,
+  0x81,
+  0xC3,
+  0xE7,
   0xFF
 };
 
 const byte coracao1[8] = {
-  0b00000000,
-  0b01100110,
-  0b11111111,
-  0b11111111,
-  0b01111110,
-  0b00111100,
-  0b00011000,
-  0b00000000
+  0x00,
+  0x66,
+  0xFF,
+  0xFF,
+  0x7E,
+  0x3C,
+  0x18,
+  0x00
 };
 
-const byte coracao2[8] = {
-  0b00000000,
-  0b01100110,
-  0b11111111,
-  0b11111111,
-  0b11111111,
-  0b01111110,
-  0b00111100,
-  0b00000000
-};
 
 // ================================
 // Vetor de letras que irão aparecer
@@ -217,6 +227,41 @@ void clearFB() {
 }
 
 // ================================
+// Faz a scroll para esquerda simples
+// ================================
+void scroll() {
+  for (byte row = 0; row < 8; row++) {
+    fb[row] <<= 1;
+  }
+}
+
+// ================================
+// Vai e volta do objeto na tela
+// ================================
+void roundTrip() {
+  for (byte row = 0; row < 8; row++) {
+    if (direcao == 1)
+      fb[row] <<= 1;
+    else
+      fb[row] >>= 1;
+  }
+}
+
+// ================================
+// Verifica se o objeto tocou a borda
+// ================================
+void checkEdge() {
+  for (byte row = 0; row < 8; row++) {
+    if (fb[row] & 0b10000000) {
+      direcao = -1;  // bateu à direita
+    }
+    if (fb[row] & 0b00000001) {
+      direcao = 1;  // bateu à esquerda
+    }
+  }
+}
+
+// ================================
 // Faz a letra entrar pela direita
 // ================================
 void scrollInLetter(const byte letter[8]) {
@@ -243,7 +288,7 @@ void clearMatriz() {
 }
 
 // ================================
-// LOOP
+// SETUP
 // ================================
 void setup() {
   pinMode(CS_MAX, OUTPUT);
@@ -260,25 +305,32 @@ void setup() {
   sendMAX(0x0F, 0x00);  // display test OFF
 
   clearMatriz();
+  loadLetter(quadrado);
 }
 
 // ================================
 // LOOP
 // ================================
- void loop() {
-//   for (byte i = 0; i < 6; i++) {
-//     scrollInLetter(texto[i]);
-//   }
-//   delay(1000);
+void loop() {
+  // for (byte i = 0; i < 6; i++) {
+  //   scrollInLetter(texto[i]);
+  // }
+  // delay(1000);
 
-  loadLetter(coracao1);
+  // for (int repeticao = 0; repeticao < 5; repeticao++) {
+  //   loadLetter(coracao);
+  //   drawFB();
+  //   sendMAX(0x0A, 0x03);
+  //   delay(500);
+
+  //   loadLetter(coracao1);
+  //   drawFB();
+  //   sendMAX(0x0A, 0x0F);
+  //   delay(500);
+  // }
+
   drawFB();
-  sendMAX(0x0A, 0x07);
-  delay(500);
-  
-  loadLetter(coracao2);
-  drawFB();
-  sendMAX(0x0A, 0x0F);
-  delay(500);
-  
+  delay(200);
+  checkEdge();  
+  roundTrip();
 }
