@@ -149,6 +149,27 @@ const byte coracao[8] = {
   0xFF
 };
 
+const byte coracao1[8] = {
+  0b00000000,
+  0b01100110,
+  0b11111111,
+  0b11111111,
+  0b01111110,
+  0b00111100,
+  0b00011000,
+  0b00000000
+};
+
+const byte coracao2[8] = {
+  0b00000000,
+  0b01100110,
+  0b11111111,
+  0b11111111,
+  0b11111111,
+  0b01111110,
+  0b00111100,
+  0b00000000
+};
 
 // ================================
 // Vetor de letras que irão aparecer
@@ -244,9 +265,20 @@ void setup() {
 // ================================
 // LOOP
 // ================================
-void loop() {
-  for (byte i = 0; i < 6; i++) {
-    scrollInLetter(texto[i]);
-  }
-  delay(1000);
+ void loop() {
+//   for (byte i = 0; i < 6; i++) {
+//     scrollInLetter(texto[i]);
+//   }
+//   delay(1000);
+
+  loadLetter(coracao1);
+  drawFB();
+  sendMAX(0x0A, 0x07);
+  delay(500);
+  
+  loadLetter(coracao2);
+  drawFB();
+  sendMAX(0x0A, 0x0F);
+  delay(500);
+  
 }
